@@ -84,7 +84,11 @@ The API docs are available at `http://localhost:8000/docs`.
 
 ### 5. Start the UI (new terminal)
 
+Then when opening a second terminal for Streamlit, navigate to the project folder and activate again:
+
 ```bash
+cd path/to/EDAAgent # the path where you cloned the repo
+source .venv/bin/activate
 streamlit run ui.py
 ```
 
