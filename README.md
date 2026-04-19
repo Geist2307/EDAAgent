@@ -48,9 +48,11 @@ git clone git@github.com:Geist2307/EDAAgent.git
 cd EDAAgent
 ```
 
-### 2. Install dependencies
+### 2. Create a python environmnet and install dependencies
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
