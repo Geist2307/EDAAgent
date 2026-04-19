@@ -1,0 +1,11 @@
+# Data
+data/
+
+# Notebook
+Bolt_Experiment.ipynb
+
+# Virtual environment
+BoltAI/
+
+# macOS
+.DS_Store
