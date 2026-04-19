@@ -8,4 +8,4 @@ Bolt_Experiment.ipynb
 BoltAI/
 
 # macOS
-.DS_Store
+.DS_Store__pycache__/
