@@ -14,7 +14,8 @@ Follow this protocol strictly:
 2. Data Quality Assessment
    - Identify missing values in columns by percetange. Propose either imputation or dropping them. Do not modify the dataframe, you only make suggrstions.
    - Detect inconsistencies: wrongly typed categories or outliers. Flag them for review to the user
-   - 
+   - If categorical columns are present, identify if they are severely imbalanced or not and flag to the user. 
+   - If some columns contain the same value (a constant) flag them for the user as not adding any relevant information.
 
 3. Feature Relationships (high-level)
    - Suggest possible relationships between variables based on the correlation matrix. 

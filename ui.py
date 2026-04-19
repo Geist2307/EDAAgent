@@ -192,14 +192,13 @@ def api_get_visuals(session_id: str) -> dict:
     resp.raise_for_status()
     return resp.json()
 
-
-def api_send_message(session_id: str, message: str) -> str:
+def api_send_message(session_id: str, message: str) -> dict:
     resp = requests.post(
         f"{API_BASE}/session/{session_id}/message",
         json={"message": message},
     )
     resp.raise_for_status()
-    return resp.json()["reply"]
+    return resp.json()
 
 
 def reset_session():
@@ -339,12 +338,20 @@ if has_visuals:
 
 # ── Chat ──────────────────────────────────────────────────────────────────────
 
+# ── Chat ──────────────────────────────────────────────────────────────────────
+
 st.markdown("#### 💬 Ask the Agent")
 
 # Render history
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"], avatar="🧑" if msg["role"] == "user" else "📊"):
         st.markdown(msg["content"])
+        if msg["role"] == "assistant" and msg.get("tokens_used"):
+            st.caption(
+                f"🔢 **{msg['tokens_used']:,} tokens** "
+                f"({msg['prompt_tokens']:,} prompt · {msg['completion_tokens']:,} completion) "
+                f"· 💰 **${msg['cost_usd']:.5f}**"
+            )
 
 # Suggested prompts — shown only before first message
 if not st.session_state.messages:
@@ -360,12 +367,14 @@ if not st.session_state.messages:
             st.session_state._quick_prompt = suggestion
             st.rerun()
 
-# Handle quick prompt from suggestion buttons
-prompt = getattr(st.session_state, "_quick_prompt", None)
-if prompt:
-    del st.session_state._quick_prompt
-else:
+# Resolve prompt — either from suggestion buttons or chat input
+prompt = st.session_state.pop("_quick_prompt", None)
+if not prompt:
     prompt = st.chat_input("Ask anything about your dataset…")
+
+# Prevent re-processing the same prompt on rerun
+if prompt and prompt == st.session_state.get("_last_prompt"):
+    prompt = None
 
 if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -375,10 +384,27 @@ if prompt:
     with st.chat_message("assistant", avatar="📊"):
         with st.spinner("Thinking…"):
             try:
-                reply = api_send_message(st.session_state.session_id, prompt)
+                result = api_send_message(st.session_state.session_id, prompt)
+                reply = result["reply"]
             except Exception as e:
                 reply = f"⚠️ Error contacting the agent: {e}"
+                result = {}
         st.markdown(reply)
 
-    st.session_state.messages.append({"role": "assistant", "content": reply})
+        if result.get("tokens_used"):
+            st.caption(
+                f"🔢 **{result['tokens_used']:,} tokens** "
+                f"({result['prompt_tokens']:,} prompt · {result['completion_tokens']:,} completion) "
+                f"· 💰 **${result['cost_usd']:.5f}**"
+            )
+
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": reply,
+        "tokens_used": result.get("tokens_used"),
+        "prompt_tokens": result.get("prompt_tokens"),
+        "completion_tokens": result.get("completion_tokens"),
+        "cost_usd": result.get("cost_usd"),
+    })
+    st.session_state._last_prompt = prompt
     st.rerun()

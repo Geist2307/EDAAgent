@@ -11,6 +11,8 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, MessagesState, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
+from langchain_community.callbacks import get_openai_callback
+
 
 from prompts import build_system_prompt
 from tools import make_tools
@@ -18,7 +20,7 @@ from tools import make_tools
 
 def build_agent(df: pd.DataFrame, data_dictionary: dict, checkpointer: MemorySaver):
     llm = ChatOpenAI(
-        model="gpt-4o",
+        model="gpt-5.2",
         api_key=os.environ["OPENAI_API_KEY"],
         temperature=0,
     )
@@ -42,13 +44,23 @@ def build_agent(df: pd.DataFrame, data_dictionary: dict, checkpointer: MemorySav
     return builder.compile(checkpointer=checkpointer)
 
 
-def run_turn(agent, session_id: str, user_message: str) -> str:
-    """Send one message and return the assistant's reply."""
+
+def run_turn(agent, session_id: str, user_message: str) -> dict:
+    """Send one message and return the assistant's reply plus token/cost metadata."""
     from langchain_core.messages import HumanMessage
 
     config = {"configurable": {"thread_id": session_id}}
-    result = agent.invoke(
-        {"messages": [HumanMessage(content=user_message)]},
-        config=config,
-    )
-    return result["messages"][-1].content
+
+    with get_openai_callback() as cb:
+        result = agent.invoke(
+            {"messages": [HumanMessage(content=user_message)]},
+            config=config,
+        )
+
+    return {
+        "reply": result["messages"][-1].content,
+        "tokens_used": cb.total_tokens,
+        "prompt_tokens": cb.prompt_tokens,
+        "completion_tokens": cb.completion_tokens,
+        "cost_usd": round(cb.total_cost, 5),
+    }

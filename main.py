@@ -54,6 +54,10 @@ class SessionResponse(BaseModel):
 
 class MessageResponse(BaseModel):
     reply: str
+    tokens_used: int
+    prompt_tokens: int
+    completion_tokens: int
+    cost_usd: float
 
 
 class VisualsResponse(BaseModel):
@@ -76,8 +80,6 @@ def _get_agent(session_id: str):
         )
     return _agent_cache[session_id]
 
-
-# ── Endpoints ─────────────────────────────────────────────────────────────────
 
 @app.post("/session", response_model=SessionResponse)
 async def create_new_session(
@@ -111,7 +113,15 @@ async def create_new_session(
         columns=list(df.columns),
         shape=list(df.shape),
     )
+@app.post("/session/{session_id}/message", response_model=MessageResponse)
+def send_message(session_id: str, body: MessageRequest):
+    session = get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found.")
 
+    agent = _get_agent(session_id)
+    result = run_turn(agent, session_id, body.message)
+    return MessageResponse(**result)
 
 @app.get("/session/{session_id}/visuals", response_model=VisualsResponse)
 def get_visuals(session_id: str):
@@ -132,21 +142,6 @@ def get_visuals(session_id: str):
         correlation=corr_image,
     )
 
-
-@app.post("/session/{session_id}/message", response_model=MessageResponse)
-def send_message(session_id: str, body: MessageRequest):
-    """
-    Send a message to the EDA agent for this session.
-    Conversation history is preserved across calls via the session checkpointer.
-    """
-    session = get_session(session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found.")
-
-    agent = _get_agent(session_id)
-    reply = run_turn(agent, session_id, body.message)
-
-    return MessageResponse(reply=reply)
 
 
 @app.delete("/session/{session_id}")

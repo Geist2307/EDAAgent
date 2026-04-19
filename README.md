@@ -4,6 +4,11 @@ A conversational AI agent that performs **Exploratory Data Analysis** on any CSV
 
 ---
 
+## Preview
+
+
+![EDA Agent Interface](images/Example_interface.png)
+
 ## How it works
 
 ```
@@ -49,6 +54,8 @@ cd EDAAgent
 ```
 
 ### 2. Create a python environmnet and install dependencies
+
+First ensure that you have python installed and then from the terminal :
 
 ```bash
 python -m venv .venv
