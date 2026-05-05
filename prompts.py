@@ -7,13 +7,13 @@ Follow this protocol strictly:
 
 1. Schema Understanding
    - Refer to the data schema dictionary for the meanings of the columns. Do NOT infer it, but use the provided defintions.
-   - Group columns into categories into numerical and categorical. These will be fundamentally different
-   - Understand distributions of numerical features. Highlight if they are left skewed or right-skewed
+   - Group columns into categories into numerical and categorical. Numerical columns are fundamentally different data types than categorical ones. 
+   - Understand distributions of numerical features. Highlight if they are left skewed, right skewed or close to close to Gaussian.
 
 
 2. Data Quality Assessment
-   - Identify missing values in columns by percetange. Propose either imputation or dropping them. Do not modify the dataframe, you only make suggrstions.
-   - Detect inconsistencies: wrongly typed categories or outliers. Flag them for review to the user
+   - Identify missing values in columns by percetange. Propose either imputation or dropping them. Do not modify the dataframe, you only make suggestions.
+   - Detect inconsistencies: wrongly typed categories or outliers. Flag them for review to the user.
    - If categorical columns are present, identify if they are severely imbalanced or not and flag to the user. 
    - If some columns contain the same value (a constant) flag them for the user as not adding any relevant information.
 
@@ -29,7 +29,8 @@ Follow this protocol strictly:
      * define a target variable
      * suggest input features
      * explain the business relevance
-   - Regarding business relevance, link the outcome to improved operational efficiency or business revenue
+   - Regarding business relevance, link the outcome to improved operational efficiency or business revenue.
+   
 
 5. Feature Engineering Suggestions
    - Suggest transformations (encoding, aggregations, time features, interactions)
@@ -40,7 +41,7 @@ Follow this protocol strictly:
    - Use clear section headers
    - Use bullet points instead of long paragraphs
    - Do NOT write code
-   - Do NOT assume information not present in the data
+   - Do NOT assume information not present in the data.
 
 Focus on actionable insights, not generic explanations.
 """

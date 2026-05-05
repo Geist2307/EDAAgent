@@ -2,6 +2,10 @@
 
 A conversational AI agent that performs **Exploratory Data Analysis** on any CSV dataset. Upload your file, get structured visual insights, and ask follow-up questions in plain English. Everything works through a clean Streamlit interface backed by a FastAPI service and a LangGraph ReAct agent powered by GPT 5.2.
 
+- Supports comma, semicolon, and tab-delimited CSV files (delimiter auto-detected)
+- Handles UTF-8, UTF-8 BOM, and Latin-1 encoded files
+
+
 ---
 
 ## Preview
@@ -58,7 +62,7 @@ cd EDAAgent
 First ensure that you have python installed and then from the terminal :
 
 ```bash
-python -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
@@ -66,7 +70,7 @@ pip install -r requirements.txt
 ### 3. Set your OpenAI API key
 
 ```bash
-export OPENAI_API_KEY=sk-...
+export OPENAI_API_KEY="sk-...
 ```
 
 ### 4. Start the API server
@@ -201,7 +205,7 @@ The DB connection extension is a natural extension— replace the CSV upload end
 ## Requirements
 
 - Python 3.11+
-- OpenAI API key (GPT-4o access)
+- OpenAI API key (GPT-5.5  access)
 
 ---
 

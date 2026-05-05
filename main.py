@@ -95,7 +95,9 @@ async def create_new_session(
 
     contents = await file.read()
     try:
-        df = pd.read_csv(io.BytesIO(contents))
+        df = pd.read_csv(io.BytesIO(contents), encoding='utf-8-sig', sep = None, engine = 'python')
+    except UnicodeDecodeError:
+        df =  pd.read_csv(io.BytesIO(contents), encoding='latin-1')
     except Exception as e:
         raise HTTPException(status_code=422, detail=f"Could not parse CSV: {e}")
 

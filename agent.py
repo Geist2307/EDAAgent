@@ -22,7 +22,7 @@ def build_agent(df: pd.DataFrame, data_dictionary: dict, checkpointer: MemorySav
     llm = ChatOpenAI(
         model="gpt-5.2",
         api_key=os.environ["OPENAI_API_KEY"],
-        temperature=0,
+        temperature=0, # this is for deterministic output
     )
 
     tools = make_tools(df)
